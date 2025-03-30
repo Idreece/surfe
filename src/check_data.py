@@ -1,19 +1,16 @@
 from sqlalchemy import create_engine
 import pandas as pd
+from utils.database import get_database_connection
 
-def check_data():
+def check_data() -> None:
     try:
-        # Create SQLAlchemy engine
-        engine = create_engine('postgresql://surfe_user:surfe_password@postgres:5432/surfe_db')
+        engine = get_database_connection()
         
-        # List of tables to check
         tables = ['customers', 'subscriptions', 'invoices', 'payments']
         
         for table in tables:
-            # Load data into pandas DataFrame using SQLAlchemy
             df = pd.read_sql_query(f"SELECT * FROM {table}", engine)
             
-            # Print the data
             print(f"\nData from {table} table:")
             print("-" * 50)
             print(df)

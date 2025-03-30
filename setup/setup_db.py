@@ -1,13 +1,11 @@
 from sqlalchemy import create_engine, text
+from src.utils.database import get_database_connection
 
 def setup_database():
     try:
-        # Create SQLAlchemy engine
-        engine = create_engine('postgresql://surfe_user:surfe_password@postgres:5432/surfe_db')
+        engine = get_database_connection()
         
-        # Create tables with proper indexing
         with engine.connect() as conn:
-            # Drop existing tables if they exist
             conn.execute(text("""
                 DROP TABLE IF EXISTS payments CASCADE;
                 DROP TABLE IF EXISTS invoices CASCADE;
@@ -15,7 +13,6 @@ def setup_database():
                 DROP TABLE IF EXISTS customers CASCADE;
             """))
             
-            # Create CUSTOMERS table
             conn.execute(text("""
                 CREATE TABLE customers (
                     customer_id VARCHAR(50) PRIMARY KEY,
@@ -26,7 +23,6 @@ def setup_database():
                 CREATE INDEX idx_customers_created_date ON customers (created_date);
             """))
             
-            # Create SUBSCRIPTIONS table
             conn.execute(text("""
                 CREATE TABLE subscriptions (
                     subscription_id VARCHAR(50) PRIMARY KEY,
@@ -42,7 +38,6 @@ def setup_database():
                 CREATE INDEX idx_subscriptions_created_date ON subscriptions (created_date);
             """))
             
-            # Create INVOICES table
             conn.execute(text("""
                 CREATE TABLE invoices (
                     invoice_id VARCHAR(50) PRIMARY KEY,
@@ -81,7 +76,6 @@ def setup_database():
                 CREATE INDEX idx_invoices_created_date ON invoices (created_date);
             """))
             
-            # Create PAYMENTS table
             conn.execute(text("""
                 CREATE TABLE payments (
                     payment_id VARCHAR(50) PRIMARY KEY,

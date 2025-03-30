@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, text
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from utils.database import get_database_connection
 
 def clean_numeric_columns(df):
     """Convert numeric columns from string with commas to float"""
@@ -11,11 +12,8 @@ def clean_numeric_columns(df):
         'inclusive_tax_amount', 'starting_balance', 'ending_balance'
     ]
     for col in numeric_columns:
-        # Convert to string first to handle any format
         df[col] = df[col].astype(str)
-        # Replace commas with periods
         df[col] = df[col].str.replace(',', '.')
-        # Convert to float, replacing any invalid values with 0.0
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)
     return df
 
@@ -30,7 +28,6 @@ def clean_datetime_columns(df):
         df[col] = pd.to_datetime(df[col])
         df[col] = df[col].replace({pd.NaT: None})
     
-    # Extract date for created_date column
     df['created_date'] = df['created_at'].dt.date
     return df
 
@@ -141,10 +138,8 @@ def get_upsert_query():
 
 def update_invoices():
     try:
-        # Create SQLAlchemy engine
-        engine = create_engine('postgresql://surfe_user:surfe_password@postgres:5432/surfe_db')
+        engine = get_database_connection()
         
-        # Read and clean the data
         df = pd.read_csv('data/invoices.csv')
         df = rename_columns(df)
         df = clean_numeric_columns(df)
@@ -152,10 +147,8 @@ def update_invoices():
         df = clean_boolean_columns(df)
         df = clean_string_columns(df)
         
-        # Get the upsert query
         upsert_query = get_upsert_query()
         
-        # Execute upsert for each row
         with engine.connect() as conn:
             for _, row in df.iterrows():
                 conn.execute(text(upsert_query), row.to_dict())
