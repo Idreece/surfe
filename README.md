@@ -1,32 +1,19 @@
-# PostgreSQL Analytics Project
+# Surfe Analytics Project
 
 This project sets up a PostgreSQL database with Python for data analytics. It uses Docker to ensure consistent environments and easy setup.
-
-## Project Structure
-
-```
-.
-├── setup/                  # Setup and configuration files
-│   ├── Dockerfile         # Python environment configuration
-│   ├── docker-compose.yml # Docker services configuration
-│   ├── env_start.sh      # Script to manage Docker environment
-│   └── setup_db.py       # Database initialization script
-├── src/                   # Source code
-│   └── load_data.py      # Data loading and testing script
-├── data/                  # Data files directory
-└── README.md             # This file
-```
 
 ## Prerequisites
 
 - Docker and Docker Compose installed
+- Colima also installed if you are on Apple Silicon
 - Git (for version control)
+
 
 ## Setup Instructions
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Idreece/surfe.git
    cd surfe
    ```
 
@@ -47,15 +34,20 @@ This project sets up a PostgreSQL database with Python for data analytics. It us
    This creates:
    - The database schema
    - Required tables
-   - Test data table
 
-4. Test the setup:
+## Data Loading
+
+1. Load customer data:
    ```bash
-   docker exec surfe_python python src/load_data.py
+   docker exec surfe_python python src/update_customers.py
    ```
-   This will:
-   - Insert sample test data
-   - Read and display the data
+   This will process and load customer records into the database.
+
+2. Load invoice data:
+   ```bash
+   docker exec surfe_python python src/update_invoices.py
+   ```
+   This will process and load invoice records into the database.
 
 ## Managing the Environment
 
@@ -76,17 +68,3 @@ This project sets up a PostgreSQL database with Python for data analytics. It us
 - Password: surfe_password
 - Host: postgres
 - Port: 5432
-
-## Current Features
-
-- Containerized PostgreSQL database
-- Python environment with SQLAlchemy and Pandas
-- Sample data loading and querying capabilities
-- Easy environment management scripts
-
-## Next Steps
-
-- Add data analysis notebooks
-- Import real datasets
-- Create analysis pipelines
-- Add visualization capabilities 
