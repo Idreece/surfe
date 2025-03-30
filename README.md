@@ -4,10 +4,52 @@ This project sets up a PostgreSQL database with Python for data analytics. It us
 
 ## Prerequisites
 
-- Docker and Docker Compose installed
-- Colima also installed if you are on Apple Silicon
-- Git (for version control)
+### For macOS:
 
+1. Homebrew (Package Manager for macOS):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. Docker and Docker Compose:
+   ```bash
+   # Install Docker Engine and Docker Compose
+   brew install docker
+   brew install docker-compose
+   ```
+
+3. Colima (for Apple Silicon):
+   ```bash
+   brew install colima
+   ```
+
+4. Git:
+   ```bash
+   brew install git
+   ```
+
+### For Windows:
+
+1. Install Git:
+   - Download Git from: https://git-scm.com/download/win
+   - Run the installer with default settings
+
+2. Install Docker Desktop for Windows:
+   - Download Docker Desktop from: https://www.docker.com/products/docker-desktop
+   - Run the installer
+   - During installation, ensure WSL 2 is enabled if prompted
+   - Restart your computer after installation
+
+### Verify Installation
+
+After installation, verify the versions in your terminal/command prompt:
+```bash
+docker --version
+docker-compose --version
+git --version
+```
+
+Note: Python is provided within the Docker container, so no local Python installation is required.
 
 ## Setup Instructions
 
@@ -27,7 +69,7 @@ This project sets up a PostgreSQL database with Python for data analytics. It us
    - Start Python container
    - Create a Docker network for communication
 
-3. Initialize the database:
+3. Initialise the database:
    ```bash
    docker exec surfe_python python setup/setup_db.py
    ```
