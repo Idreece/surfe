@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  python:
+    build:
+      context: ..
+      dockerfile: setup/Dockerfile
+    container_name: surfe_python
+    volumes:
+      - ..:/app
+    depends_on:
+      - postgres
+    command: tail -f /dev/null
+
+  postgres:
+    image: postgres:15
+    container_name: surfe_postgres
+    environment:
+      POSTGRES_USER: surfe_user
+      POSTGRES_PASSWORD: surfe_password
+      POSTGRES_DB: surfe_db
+    ports:
+      - "5432:5432"
+
+networks:
+  surfe_network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
