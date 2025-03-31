@@ -7,7 +7,14 @@ import argparse
 
 def get_mrr_query() -> str:
     return """
-    WITH monthly_revenue AS (
+    WITH customer_tenure AS (
+        SELECT 
+            customer_id,
+            EXTRACT(MONTH FROM AGE(:as_of_date, created_at)) as months_since_joined
+        FROM customers
+        WHERE customer_id = :customer_id
+    ),
+    monthly_revenue AS (
         SELECT 
             DATE_TRUNC('month', period_start) as month,
             currency,
@@ -21,15 +28,17 @@ def get_mrr_query() -> str:
         GROUP BY DATE_TRUNC('month', period_start), currency
     )
     SELECT 
-        month,
-        currency,
-        monthly_revenue,
-        active_subscriptions,
-        monthly_revenue / NULLIF(active_subscriptions, 0) as mrr_per_subscription,
-        monthly_revenue as mrr,
-        CASE WHEN active_subscriptions > 0 THEN TRUE ELSE FALSE END as has_subscription
-    FROM monthly_revenue
-    ORDER BY month DESC, currency;
+        m.month,
+        m.currency,
+        m.monthly_revenue,
+        m.active_subscriptions,
+        m.monthly_revenue / NULLIF(m.active_subscriptions, 0) as mrr_per_subscription,
+        m.monthly_revenue as mrr,
+        CASE WHEN m.active_subscriptions > 0 THEN TRUE ELSE FALSE END as has_subscription,
+        c.months_since_joined
+    FROM monthly_revenue m
+    CROSS JOIN customer_tenure c
+    ORDER BY m.month DESC, m.currency;
     """
 
 def execute_mrr_query(engine: create_engine, customer_id: str, as_of_date: datetime) -> Optional[pd.DataFrame]:

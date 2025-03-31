@@ -1,2 +1,2 @@
-month,currency,monthly_revenue,active_subscriptions,mrr_per_subscription,mrr,has_subscription
-2025-02-01 00:00:00+00:00,usd,31250.00,1,31250.000000000000,31250.00,True
+month,currency,monthly_revenue,active_subscriptions,mrr_per_subscription,mrr,has_subscription,months_since_joined
+2025-02-01 00:00:00+00:00,usd,31250.00,1,31250.000000000000,31250.00,True,11
