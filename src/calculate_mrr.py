@@ -10,22 +10,26 @@ def get_mrr_query() -> str:
     WITH monthly_revenue AS (
         SELECT 
             DATE_TRUNC('month', period_start) as month,
+            currency,
             SUM(total) as monthly_revenue,
             COUNT(DISTINCT subscription_id) as active_subscriptions
         FROM invoices
         WHERE customer_id = :customer_id
         AND period_start <= :as_of_date
         AND is_forgiven = FALSE 
-        GROUP BY DATE_TRUNC('month', period_start)
+        AND currency IN ('eur', 'usd')
+        GROUP BY DATE_TRUNC('month', period_start), currency
     )
     SELECT 
         month,
+        currency,
         monthly_revenue,
         active_subscriptions,
         monthly_revenue / NULLIF(active_subscriptions, 0) as mrr_per_subscription,
-        monthly_revenue as mrr
+        monthly_revenue as mrr,
+        CASE WHEN active_subscriptions > 0 THEN TRUE ELSE FALSE END as has_subscription
     FROM monthly_revenue
-    ORDER BY month DESC;
+    ORDER BY month DESC, currency;
     """
 
 def execute_mrr_query(engine: create_engine, customer_id: str, as_of_date: datetime) -> Optional[pd.DataFrame]:
@@ -44,11 +48,12 @@ def execute_mrr_query(engine: create_engine, customer_id: str, as_of_date: datet
         print(f"Error executing MRR query: {e}")
         return None
 
-def save_mrr_to_csv(df: Optional[pd.DataFrame], customer_id: str, output_dir: str = "output") -> None:
+def save_mrr_to_csv(df: Optional[pd.DataFrame], customer_id: str, as_of_date: datetime, output_dir: str = "output") -> None:
     if df is not None:
         try:
-            df.to_csv(f"{output_dir}/mrr_{customer_id}.csv", index=False)
-            print(f"MRR data saved to {output_dir}/mrr_{customer_id}.csv")
+            date_str = as_of_date.strftime('%Y%m%d')
+            df.to_csv(f"{output_dir}/mrr_{customer_id}_{date_str}.csv", index=False)
+            print(f"MRR data saved to {output_dir}/mrr_{customer_id}_{date_str}.csv")
         except Exception as e:
             print(f"Error saving MRR data to CSV: {e}")
     else:
@@ -58,7 +63,7 @@ def calculate_mrr(customer_id: str, as_of_date: datetime, output_dir: str = "out
     try:
         engine = get_database_connection()
         df = execute_mrr_query(engine, customer_id, as_of_date)
-        save_mrr_to_csv(df, customer_id, output_dir)
+        save_mrr_to_csv(df, customer_id, as_of_date, output_dir)
     except Exception as e:
         print(f"Error calculating MRR: {e}")
 
