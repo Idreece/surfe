@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 from typing import Optional
 from utils.database import get_database_connection
+import argparse
 
 def get_mrr_query() -> str:
     return """
@@ -62,13 +63,20 @@ def calculate_mrr(customer_id: str, as_of_date: datetime, output_dir: str = "out
         print(f"Error calculating MRR: {e}")
 
 def main() -> None:
-    """
-    Main function to demonstrate MRR calculation usage.
-    """
-    customer_id = "cus_RgLOYG9tQ1hPEh" 
-    as_of_date = datetime(2025, 12, 31) 
+    parser = argparse.ArgumentParser(description='Calculate Monthly Recurring Revenue (MRR) for a customer')
+    parser.add_argument('--customer-id', required=True, help='The Stripe customer ID')
+    parser.add_argument('--as-of-date', required=True, help='The date to calculate MRR as of (YYYY-MM-DD)')
+    parser.add_argument('--output-dir', default='output', help='Directory to save the output CSV file')
     
-    calculate_mrr(customer_id, as_of_date)
+    args = parser.parse_args()
+    
+    try:
+        as_of_date = datetime.strptime(args.as_of_date, '%Y-%m-%d')
+        calculate_mrr(args.customer_id, as_of_date, args.output_dir)
+    except ValueError:
+        print("Error: Invalid date format. Please use YYYY-MM-DD format.")
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main() 

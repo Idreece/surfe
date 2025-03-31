@@ -105,11 +105,11 @@ Note: Python is provided within the Docker container, so no local Python install
 
 ## Running Scripts
 
-- Once the docer image has started and you have run the steps above, you can run any of the scripts with:
+- Once the docker image has started and you have run the steps above, you can run any of the scriptsand associated parameters with:
   ```bash
-   docker exec surfe_python python "Script Path from root" 
+   docker exec surfe_python python "Script path from root e.g. docker exec surfe_python python src/calculate_mrr.py --customer-id cus_RgLOYG9tQ1hPEh --as-of-date 2025-12-31" 
   ```
-  Note that in a production environment the database server would be accessed across a network and would be always live
+  Note that in a production environment the database server would be accessed across a network and would be always live. The above script runs with two parameters. 
 
 ## Running analysis Notebooks
 
