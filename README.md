@@ -103,6 +103,18 @@ Note: Python is provided within the Docker container, so no local Python install
   ./setup/env_start.sh stop && ./setup/env_start.sh start
   ```
 
+## Running Scripts
+
+- Once the docer image has started and you have run the steps above, you can run any of the scripts with:
+  ```bash
+   docker exec surfe_python python "Script Path from root" 
+  ```
+  Note that in a production environment the database server would be accessed across a network and would be always live
+
+## Running analysis Notebooks
+
+- Unfortunetly I had some difficulty setting up jupyter notebook connection to the docker python image, constrained by time I moved on, so to run ad hoc analysis you will need to install the packages in requirements.txt into one of your local python environments. Typically ad hoc analysis will be done in a seperate space.
+
 ## Database Configuration
 
 - Database Name: surfe_db
